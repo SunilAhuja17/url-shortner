@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Link {
+  id          String   @id @default(uuid())
+  originalUrl String   @unique
+  shortCode   String   @unique
+  createdAt   DateTime @default(now())
+  visits      Int      @default(0)
+  expiresAt   DateTime?
+  visitLogs   Visit[]
+}
+
+model Visit {
+  id        String   @id @default(uuid())
+  linkId    String
+  timestamp DateTime @default(now())
+
+  link     Link   @relation(fields: [linkId], references: [id], onDelete: Cascade)
+}
