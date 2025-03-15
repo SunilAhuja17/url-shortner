@@ -1,7 +1,7 @@
 import { Controller,Post,Get,Param,Body,Res,NotFoundException } from '@nestjs/common';
 import {LinksService} from "./links.service"
 import {CreateShortLinkDto} from "./dto/create-short-url.dto"
-import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
 
 
@@ -9,7 +9,7 @@ import { Response } from 'express';
 @Controller()
 export class LinksController {
     constructor(private readonly linksService:LinksService) {}
-
+    @ApiOperation({summary: 'Create a short URL' })
     @Post('/short/url')
     @ApiBody({type:CreateShortLinkDto})
     @ApiResponse({status:201,description:'URL shortened Successfully'})
@@ -18,7 +18,7 @@ export class LinksController {
     }
 
 
-    
+    @ApiOperation({ summary: 'Redirect to original URL using short alias' })
     @Get(':shortCode')
     @ApiResponse({ status: 302, description: "Redirects to original URL" })
     async redirect(@Param('shortCode') shortCode: string, @Res() res: Response) {
@@ -30,6 +30,7 @@ export class LinksController {
         }
     }
     
+    @ApiOperation({ summary: 'Get statistics of a shortened URL', description: 'Fetches visit count and other details for a given short URL code' })
     @Get('stats/:shortCode')
     @ApiResponse({status:200,description:"URL Visit Statistics"})
     async getStats(@Param('shortCode') shortCode:string){
